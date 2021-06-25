@@ -2,13 +2,13 @@ defmodule Rinari.Adapter.Movie do
   alias Rinari.Model.Movie
 
   defp find_release(tmdb) do
-    case tmdb["release_dates"] do
+    case get_in(tmdb, ["release_dates", "results"]) do
       nil -> nil
       [] -> nil
       t ->
-        us = Enum.find(t["results"], fn r -> r["iso_3166_1"] == "US" end)
+        us = Enum.find(t, fn r -> r["iso_3166_1"] == "US" end)
         releases = case us do
-                     nil -> t["results"] |> Enum.flat_map(fn r -> r["release_dates"] end)
+                     nil -> t |> Enum.flat_map(fn r -> r["release_dates"] end)
                      r -> r["release_dates"]
                    end
 
@@ -24,21 +24,27 @@ defmodule Rinari.Adapter.Movie do
   end
 
   defp find_trailer(tmdb) do
-    case tmdb["videos"] do
+    case get_in(tmdb, ["videos", "results"]) do
       nil -> nil
-      t -> Enum.find(t["results"], fn v -> v["type"] == "Trailer" && v["site"] == "YouTube" end)
+      [] -> nil
+      t -> Enum.find(t, fn v -> v["type"] == "Trailer" && v["site"] == "YouTube" end)
           |> Map.get("key")
           |> (&("http://www.youtube.com/watch?v=#{&1}")).()
     end
   end
 
   def convert(tmdb) do
+    if !tmdb["id"] do
+      raise "Invalid TMDB entry: #{inspect(tmdb)}"
+    end
+
     release = find_release(tmdb)
 
     %Movie{
       imdb_id: tmdb["imdb_id"],
       tmdb_id: tmdb["id"],
-      title: tmdb["original_title"],
+      title: tmdb["title"],
+      original_title: tmdb["original_title"],
       synopsis: tmdb["overview"],
       release_date: release["release_date"],
       certification: release["certification"],

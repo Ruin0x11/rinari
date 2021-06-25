@@ -9,6 +9,8 @@ defmodule Rinari.Model.Torrent do
     field :size, :integer
     field :title, :string
     field :url, :string
+    field :seeders, :integer
+    field :peers, :integer
     field :torrent_provider_id, :id
     field :type, Rinari.Model.Enum.TorrentType
 

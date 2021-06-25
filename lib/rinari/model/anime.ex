@@ -18,6 +18,7 @@ defmodule Rinari.Model.Anime do
     field :status, :string
     field :synopsis, :string
     field :title, :string
+    field :original_title, :string
     field :type, Rinari.Model.Enum.AnimeType
 
     has_many :torrents, {"anime_torrents", Rinari.Model.Torrent}, foreign_key: :assoc_id
@@ -29,8 +30,8 @@ defmodule Rinari.Model.Anime do
   @doc false
   def changeset(anime, attrs) do
     anime
-    |> cast(attrs, [:kitsu_id, :imdb_id, :tmdb_id, :title, :synopsis, :runtime, :release_date, :slug, :num_seasons, :country, :network, :last_updated, :air_day, :air_time, :status, :type])
-    |> validate_required([:kitsu_id, :imdb_id, :tmdb_id, :title, :synopsis, :runtime, :release_date, :slug, :num_seasons, :country, :network, :last_updated, :air_day, :air_time, :status, :type])
+    |> cast(attrs, [:kitsu_id, :imdb_id, :tmdb_id, :title, :original_title, :synopsis, :runtime, :release_date, :slug, :num_seasons, :country, :network, :last_updated, :air_day, :air_time, :status, :type])
+    |> validate_required([:kitsu_id, :imdb_id, :tmdb_id, :title, :original_title, :synopsis, :runtime, :release_date, :slug, :num_seasons, :country, :network, :last_updated, :air_day, :air_time, :status, :type])
     |> unique_constraint(:kitsu_id)
   end
 end

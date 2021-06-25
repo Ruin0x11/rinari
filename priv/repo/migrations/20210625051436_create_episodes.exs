@@ -9,7 +9,7 @@ defmodule Rinari.Repo.Migrations.CreateEpisodes do
         add :episode, :integer
         add :first_aired, :utc_datetime
         add :title, :string
-        add :overview, :string
+        add :overview, :text
         add :tmdb_id, :integer
 
         timestamps()

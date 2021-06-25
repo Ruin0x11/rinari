@@ -10,6 +10,7 @@ defmodule Rinari.Model.Movie do
     field :runtime, :integer
     field :synopsis, :string
     field :title, :string
+    field :original_title, :string
     field :trailer, :string
 
     has_many :torrents, {"movie_torrents", Rinari.Model.Torrent}, foreign_key: :assoc_id
@@ -20,8 +21,8 @@ defmodule Rinari.Model.Movie do
   @doc false
   def changeset(movie, attrs) do
     movie
-    |> cast(attrs, [:imdb_id, :tmdb_id, :title, :synopsis, :runtime, :release_date, :certification, :trailer])
-    |> validate_required([:imdb_id, :tmdb_id, :title, :synopsis, :runtime, :release_date, :trailer])
+    |> cast(attrs, [:imdb_id, :tmdb_id, :title, :original_title, :synopsis, :runtime, :release_date, :certification, :trailer])
+    |> validate_required([:imdb_id, :tmdb_id, :title, :original_title, :synopsis, :runtime, :release_date, :trailer])
     |> unique_constraint(:imdb_id)
   end
 end

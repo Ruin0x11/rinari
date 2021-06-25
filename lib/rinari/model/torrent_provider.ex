@@ -9,6 +9,7 @@ defmodule Rinari.Model.TorrentProvider do
     field :name, :string
 
     has_many :torrents, Rinari.Model.Torrent
+    has_many :categories, Rinari.Model.Category
 
     timestamps()
   end

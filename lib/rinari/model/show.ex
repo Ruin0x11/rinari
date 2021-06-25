@@ -17,6 +17,7 @@ defmodule Rinari.Model.Show do
     field :status, :string
     field :synopsis, :string
     field :title, :string
+    field :original_title, :string
 
     has_many :episodes, {"show_episodes", Rinari.Model.Episode}, foreign_key: :assoc_id
 
@@ -26,8 +27,8 @@ defmodule Rinari.Model.Show do
   @doc false
   def changeset(show, attrs) do
     show
-    |> cast(attrs, [:imdb_id, :tmdb_id, :title, :synopsis, :runtime, :release_date, :slug, :num_seasons, :country, :network, :last_updated, :air_day, :air_time, :status])
-    |> validate_required([:imdb_id, :tmdb_id, :title, :synopsis, :runtime, :release_date, :slug, :num_seasons, :country, :network, :last_updated, :air_day, :air_time, :status])
+    |> cast(attrs, [:imdb_id, :tmdb_id, :title, :original_title, :synopsis, :runtime, :release_date, :slug, :num_seasons, :country, :network, :last_updated, :air_day, :air_time, :status])
+    |> validate_required([:imdb_id, :tmdb_id, :title, :original_title, :synopsis, :runtime, :release_date, :slug, :num_seasons, :country, :network, :last_updated, :air_day, :air_time, :status])
     |> unique_constraint(:imdb_id)
   end
 end

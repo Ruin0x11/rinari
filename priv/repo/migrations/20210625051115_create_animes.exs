@@ -9,7 +9,8 @@ defmodule Rinari.Repo.Migrations.CreateAnimes do
       add :imdb_id, :string
       add :tmdb_id, :integer
       add :title, :string
-      add :synopsis, :string
+      add :original_title, :string
+      add :synopsis, :text
       add :runtime, :integer
       add :release_date, :utc_datetime
       add :slug, :string

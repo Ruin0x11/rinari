@@ -1,9 +1,9 @@
-defmodule TeslaXML.MixProject do
+defmodule TorrentDissect.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :tesla_xml,
+      app: :torrentdissect,
       version: "0.1.0",
       elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -29,11 +29,8 @@ defmodule TeslaXML.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:erlsom, "~> 1.5"},
-      {:tesla, "~> 1.4.1"},
-      {:saxy, "~> 1.4.0"},
-      {:timex, "~> 3.7.5"},
-      {:inflex, "~> 2.1.0"}
+      {:jason, "~> 1.0", only: [:test]},
+      {:assertions, "~> 0.18.1", only: [:test]}
     ]
   end
 

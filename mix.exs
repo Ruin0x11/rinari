@@ -51,6 +51,7 @@ defmodule Rinari.MixProject do
       {:tesla, "~> 1.4.1"},
       {:feeder_ex, "~> 1.1.0"},
       {:tesla_xml, path: "apps/tesla_xml"},
+      {:torrentdissect, path: "apps/torrentdissect"},
       {:ecto_enum, "~> 1.4"},
       {:tmdb, github: "Ruin0x11/elixir-tmdb", branch: "develop"},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false}

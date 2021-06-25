@@ -1,5 +1,5 @@
 defmodule Rinari.Jackett.Api.Indexers do
-  import Rinari.Jackett
+  import Rinari.Jackett.Base
   alias Rinari.Jackett.Client
 
   def list(%Client{client: client}) do

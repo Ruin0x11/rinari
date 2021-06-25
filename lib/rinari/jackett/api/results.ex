@@ -1,5 +1,5 @@
 defmodule Rinari.Jackett.Api.Results do
-  import Rinari.Jackett
+  import Rinari.Jackett.Base
   alias Rinari.Jackett.Client
 
   def caps(%Client{api_key: api_key, client: client}, indexer) do
