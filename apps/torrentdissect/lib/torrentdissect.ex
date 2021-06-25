@@ -7,7 +7,7 @@ defmodule TorrentDissect do
     {:quality, "((?:PPV\\.)?[HP]DTV|(?:HD)?CAM|B[DR]Rip|(?:HD-?)?TS|(?:PPV )?WEB-?DL(?: DVDRip)?|HDRip|HDTVRip|DVDRip|DVDRIP|CamRip|W[EB]BRip|BluRay|DvDScr|hdtv|telesync)"},
     {:codec, "(xvid|[hx]\\.?26[45])"},
     {:audio, "(MP3|DD2\\.?0|DDP2\\.?0|DD5\\.?1|DDP5\\.?1|Dual[\\- ]Audio|LiNE|DTS|DTS5\\.1|AAC[ \\.-]LC|AAC(?:\\.?2\\.0)?|AC3(?:\\.5\\.1)?)"},
-    {:group, "(- ?([^-]+(?:-={[^-]+-?$)?))$"},
+    {:group, "( - ?([^-]+(?:-={[^-]+-?$)?))$"},
     {:region, "R[0-9]"},
     {:extended, "(EXTENDED(:?.CUT)?)"},
     {:hardcoded, "HC"},
@@ -40,8 +40,8 @@ defmodule TorrentDissect do
   @bt_sites ["eztv", "ettv", "rarbg", "rartv", "ETRG"]
 
   defp strip_surrounding(s, chars) do
-    Regex.compile!("[#{chars}]*([#{chars}]*)[#{chars}]*")
-    |> Regex.replace(s, "")
+    s = Regex.compile!("[#{chars}]+$") |> Regex.replace(s, "")
+    Regex.compile!("^[#{chars}]+") |> Regex.replace(s, "")
   end
 
   defp string_index(s, match) do
@@ -56,34 +56,42 @@ defmodule TorrentDissect do
       index = string_index(state[:torrent][:name], Enum.at(match, 0))
 
       {start, end_ } = case index do
-                         nil -> {String.length(match), state[:end]}
-                         index -> if state[:end] == nil || index < state[:end] do
-                           {state[:start], index}
-                         else
-                           {state[:start], state[:end]}
+                         nil ->
+                           index = string_index(state[:torrent][:name], Enum.at(match, -1))
+                           case index do
+                             0 -> {Enum.at(match, 0) |> String.length, state[:end]}
+                             nil -> {state[:start], state[:end]}
+                             index -> {state[:start], index}
+                           end
+                         index -> cond do
+                             index == 0 -> {Enum.at(match, 0) |> String.length, state[:end]}
+                             state[:end] == nil || index < state[:end] -> {state[:start], index}
+                             true -> {state[:start], state[:end]}
                          end
                        end
-
-      {group_raw, excess_raw} = if name != :excess do
-        g = if name == :group do
-          raw
-        else
-          state[:group_raw]
-        end
-        e = if raw do
-          state[:excess_raw] |> String.replace(raw, "")
-        else
-          state[:excess_raw]
-        end
-        {g, e}
-      end
-
-      %{state | start: start, end: end_, group_raw: group_raw, excess_raw: excess_raw}
+      IO.inspect({:ind, state[:torrent][:name], Enum.at(match, 0), index, start, end_})
+      %{state | start: start, end: end_}
     else
       state
     end
 
-    %{state | parts: Map.put(state[:parts], name, clean)}
+    {group_raw, excess_raw} = if name != :excess do
+      g = if name == :group do
+        raw
+      else
+        state[:group_raw]
+      end
+      e = if raw do
+        state[:excess_raw] |> String.replace(raw, "")
+      else
+        state[:excess_raw]
+      end
+      {g, e}
+    else
+      {state[:group_raw], state[:excess_raw]}
+    end
+
+    %{state | parts: Map.put(state[:parts], name, clean), group_raw: group_raw, excess_raw: excess_raw}
   end
 
   defp extract_late(state, name, clean) do
@@ -125,7 +133,9 @@ defmodule TorrentDissect do
 
         clean_name = String.replace(state[:torrent][:name], "_", " ")
         match = Regex.compile!(pattern, "i") |> Regex.run(clean_name)
-        IO.inspect({key, clean_name, match})
+        if match do
+          IO.inspect({key, clean_name, match})
+        end
 
         state = if match do
           index = case match do
@@ -184,28 +194,32 @@ defmodule TorrentDissect do
       end)
 
     raw = state[:torrent][:name]
+    IO.inspect({:a, raw, state})
 
     raw = if state[:end] do
-      String.slice(raw, state[:start]..state[:end]) |> String.split("(") |> Enum.at(0)
+      String.slice(raw, state[:start]..state[:end]-1) |> String.split("(") |> Enum.at(0)
     else
       raw
     end
+    IO.inspect({:b, raw})
 
     clean = Regex.replace(~r/^ -/, raw, "")
-    if String.contains?(clean, " ") && !String.contains?(clean, ".") do
+    clean = if not String.contains?(clean, " ") && String.contains?(clean, ".") do
       String.replace(clean, ".", " ")
     else
       clean
     end
     clean = clean |> String.replace("_", " ")
+    IO.inspect({raw, clean})
     clean = Regex.replace(~r/([\[\(_]|- )$/, clean, "")
     |> String.trim
-    |> strip_surrounding(" -_")
+    |> strip_surrounding(" \\-_")
 
     state = extract_part(state, :title, [], raw, clean)
 
-    clean = Regex.replace(~r/(^[-\. ()]+)|([-\. ]+$)/, "", state[:excess_raw])
-    clean = Regex.replace(~r/[\(\)\/]/, "", clean)
+    clean = Regex.replace(~r/(^[-\. ()]+)|([-\. ]+$)/, state[:excess_raw], "")
+    clean = Regex.replace(~r/[\(\)\/]/, clean, "")
+    # clean = Regex.replace(~r/\[[^\]]+\]/, clean, "")
     clean = String.split(clean, ~r/(.*)\.\.+| +(.*)/)
     |> Enum.filter(fn a -> a != "-" end)
     |> Enum.map(fn a -> String.trim(a, "-") end)
@@ -216,7 +230,9 @@ defmodule TorrentDissect do
         nil -> {clean, state}
         pos ->
           if pos == String.length(state[:torrent][:name]) - String.length(group_pattern) do
-                                                            {Enum.take(clean, Enum.count(clean)-1), extract_late(state, :group, String.slice(Enum.at(clean, 0), 0..-2) <> state[:group_raw])}
+                                                            group_raw = String.slice(Enum.at(clean, 0), 0..-1) <> state[:group_raw]
+                                                            group_raw = Regex.replace(~r/\[[^\]]+\]/, group_raw, "")
+                                                            {Enum.take(clean, Enum.count(clean)-1), extract_late(state, :group, group_raw)}
                                                             else
                                                               {clean, state}
           end
@@ -252,7 +268,7 @@ defmodule TorrentDissect do
               _ -> state
             end
 
-    if not Enum.empty?(clean) do
+    if Enum.count(clean) > 0 do
       clean = if Enum.count(clean) == 1 do
         Enum.at(clean, 0)
       else
@@ -261,6 +277,6 @@ defmodule TorrentDissect do
       extract_part(state, :excess, [], state[:excess_raw], clean)
     else
       state
-    end
+    end |> Access.get(:parts)
   end
 end

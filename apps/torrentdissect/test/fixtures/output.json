@@ -13,7 +13,6 @@
     "resolution": "1080p",
     "quality": "BrRip",
     "codec": "H264",
-    "excess": "",
     "title": "Hercules"
   },
   {
@@ -50,7 +49,6 @@
     "quality": "HDRip",
     "codec": "XViD",
     "extended": true,
-    "excess": "",
     "title": "Hercules",
     "group": "juggs"
   },
