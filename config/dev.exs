@@ -3,7 +3,10 @@ use Mix.Config
 config :rinari,
   amqp_host: "localhost",
   amqp_username: "guest",
-  amqp_password: "guest"
+  amqp_password: "guest",
+  jackett_host: "http://localhost",
+  jackett_port: 9117,
+  jackett_api_key: "uv9b9ygclsc7omy8l4g726cksf4poh77"
 
 # Configure your database
 config :rinari, Rinari.Repo,

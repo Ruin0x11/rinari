@@ -48,7 +48,10 @@ defmodule Rinari.MixProject do
       {:broadway, "~> 0.6.0"},
       {:broadway_rabbitmq, "~> 0.6.0"},
       {:amqp, "~> 1.0"},
+      {:tesla, "~> 1.4.1"},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
+      {:feeder_ex, "~> 1.1.0"},
+      {:tesla_xml, path: "apps/tesla_xml"}
     ]
   end
 

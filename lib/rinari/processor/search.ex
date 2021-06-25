@@ -4,6 +4,7 @@ defmodule Rinari.Processor.Search do
   @impl Rinari.Processor
   def type, do: "search"
 
+  @impl Rinari.Processor
   def process(message) do
     IO.puts("In a search")
     message
