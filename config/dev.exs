@@ -1,5 +1,10 @@
 use Mix.Config
 
+config :rinari,
+  amqp_host: "localhost",
+  amqp_username: "guest",
+  amqp_password: "guest"
+
 # Configure your database
 config :rinari, Rinari.Repo,
   username: "postgres",

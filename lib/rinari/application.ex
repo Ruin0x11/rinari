@@ -4,6 +4,7 @@ defmodule Rinari.Application do
   @moduledoc false
 
   use Application
+  require AMQP
 
   def start(_type, _args) do
     children = [
@@ -14,9 +15,8 @@ defmodule Rinari.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Rinari.PubSub},
       # Start the Endpoint (http/https)
-      RinariWeb.Endpoint
-      # Start a worker by calling: Rinari.Worker.start_link(arg)
-      # {Rinari.Worker, arg}
+      RinariWeb.Endpoint,
+      {Rinari.MessageQueue, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
