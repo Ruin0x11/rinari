@@ -503,7 +503,12 @@
   },
   {
     "title": "Akira",
-    "excess": ["UpScaled", "DesiSCR-Rip", "Hindi", "5.1", "Mafiaking"]
+    "audio": "AC3",
+    "codec": "x264",
+    "excess": ["UpScaled", ""],
+    "group": "M2Tv",
+    "resolution": "720p",
+    "year": 2016
   },
   {
     "title": "Ben Hur",
