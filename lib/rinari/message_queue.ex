@@ -30,7 +30,7 @@ defmodule Rinari.MessageQueue do
       ],
       batchers: [
         default: [],
-        insert_all: [
+        batch_insert: [
           batch_size: 50,
           batch_timeout: 1_000
         ]
@@ -39,21 +39,16 @@ defmodule Rinari.MessageQueue do
   end
 
   @impl Broadway
-  def handle_message(
-    _processor_name,
-    %Message{data: data, metadata: %{headers: headers, routing_key: routing_key}} = message,
-    _context
-  ) do
+  def handle_message(_processor_name, message, _context) do
     message
-    |> Message.update_data(&Jason.decode!/1)
+    |> Message.update_data(fn d -> Jason.decode!(d, keys: :atoms) end)
     |> process_message()
-    |> route_message()
     |> IO.inspect(label: "Got message")
   end
 
-  defp process_message(%Message{data: %{"type" => type}} = message) do
-    case Rinari.Processor.for_type(type) do
-      nil -> Message.failed(message, "No processor available for message type '#{type}'")
+  defp process_message(%Message{data: %{type: type}} = message) do
+    case Rinari.Processor.for_type(type |> String.to_atom()) do
+      nil -> message
       processor -> processor.process(message)
     end
   end
@@ -62,23 +57,14 @@ defmodule Rinari.MessageQueue do
     Message.failed(message, "No message type specified")
   end
 
-  # Route the messages to the proper batcher
-  defp route_message(%Message{data: %{"type" => type}} = message) do
-    case batching(type) do
-      :default ->
-        message
+  @impl Broadway
+  def handle_batch(:default, messages, _, _), do: messages
 
-      {batcher, batch_key} when is_atom(batcher) ->
-        message
-        |> Message.put_batcher(batcher)
-        |> Message.put_batch_key(batch_key)
+  def handle_batch(type, messages, batch_info, _) do
+    IO.inspect(type)
+    case Rinari.Batcher.for_type(type) do
+      nil -> Enum.map(messages, &Message.failed(&1, "No batcher with type #{type} registered."))
+      batcher -> batcher.batch(messages, batch_info)
     end
   end
-
-  defp route_message(message), do: message
-
-  defp batching(_), do: :default
-
-  @impl Broadway
-  def handle_batch(_, messages, _, _), do: messages
 end

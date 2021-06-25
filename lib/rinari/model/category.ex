@@ -1,7 +1,8 @@
 defmodule Rinari.Model.Category do
-  use Ecto.Schema
+  use Rinari.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, except: [:__meta__]}
   schema "categories" do
     field :name, :string
     field :provider_id, :integer

@@ -1,7 +1,8 @@
 defmodule Rinari.Model.TorrentProvider do
-  use Ecto.Schema
+  use Rinari.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, except: [:__meta__]}
   schema "torrent_providers" do
     field :configured, :boolean, default: false
     field :human_name, :string

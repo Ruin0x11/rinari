@@ -34,7 +34,7 @@ defmodule Rinari.Usagi do
   def send_message(message, queue_name \\ "rinari", exchange \\ "") do
     amqp = get_channel()
     headers = [] # [{"x-delay", delay}]
-    AMQP.Basic.publish(amqp.channel, exchange, "rinari", Jason.encode!(message), headers: headers, persistence: true)
+    AMQP.Basic.publish(amqp.channel, exchange, queue_name, Jason.encode!(message), headers: headers, persistence: true)
     close(amqp.connection)
   end
 end

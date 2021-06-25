@@ -1,7 +1,8 @@
 defmodule Rinari.Model.Movie do
-  use Ecto.Schema
+  use Rinari.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, except: [:__meta__, :torrents]}
   schema "movies" do
     field :certification, :string
     field :imdb_id, :string
@@ -13,7 +14,7 @@ defmodule Rinari.Model.Movie do
     field :original_title, :string
     field :trailer, :string
 
-    has_many :torrents, {"movie_torrents", Rinari.Model.Torrent}, foreign_key: :assoc_id
+    many_to_many :torrents, Rinari.Model.Torrent, join_through: "movies_torrents"
 
     timestamps()
   end

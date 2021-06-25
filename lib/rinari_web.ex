@@ -24,6 +24,8 @@ defmodule RinariWeb do
       import Plug.Conn
       import RinariWeb.Gettext
       alias RinariWeb.Router.Helpers, as: Routes
+
+      import RinariWeb.ControllerHelpers
     end
   end
 

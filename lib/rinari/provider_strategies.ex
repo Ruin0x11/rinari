@@ -1,12 +1,8 @@
 defmodule Rinari.ProviderStrategies do
   alias Rinari.Model
 
-  defp media_to_media_type(category) do
-    case category do
-      %Model.Movie{} -> :movie
-      %Model.Show{} -> :tv
-      %Model.Anime{} -> :anime
-    end
+  defp media_to_media_type(media) do
+    Rinari.Utils.entity_to_typed_id(media)
   end
 
   defp media_to_category(media) do
@@ -47,6 +43,11 @@ defmodule Rinari.ProviderStrategies do
       true -> %{type: :search, categories: categories, query: make_query(media)}
     end
     Map.merge(strategy, %{media_type: media_to_media_type(media), media_id: media.id, indexer_id: indexer["id"], query_type: search_to_query_type(search)})
+  end
+
+  def get_strategies(media_type, media_id) do
+    Rinari.Utils.typed_id_to_entity(media_type, media_id)
+    |> get_strategies
   end
 
   def get_strategies(media) do

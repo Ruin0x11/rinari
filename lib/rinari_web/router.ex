@@ -14,9 +14,11 @@ defmodule RinariWeb.Router do
   end
 
   scope "/", RinariWeb do
-    pipe_through :browser
+    pipe_through :api
 
-    get "/", PageController, :index
+    get "/movies", MovieController, :index
+    get "/movies/:page", MovieController, :page
+    get "/movie/:imdb_id", MovieController, :show
   end
 
   # Other scopes may use custom stacks.

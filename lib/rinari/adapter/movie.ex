@@ -35,12 +35,12 @@ defmodule Rinari.Adapter.Movie do
 
   def convert(tmdb) do
     if !tmdb["id"] do
-      raise "Invalid TMDB entry: #{inspect(tmdb)}"
+      {:error, "Invalid TMDB entry: #{inspect(tmdb)}"}
     end
 
     release = find_release(tmdb)
 
-    %Movie{
+    {:ok, %Movie{
       imdb_id: tmdb["imdb_id"],
       tmdb_id: tmdb["id"],
       title: tmdb["title"],
@@ -51,6 +51,6 @@ defmodule Rinari.Adapter.Movie do
       runtime: tmdb["runtime"],
       trailer: find_trailer(tmdb),
       torrents: []
-    }
+    }}
   end
 end

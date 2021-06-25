@@ -1,7 +1,8 @@
 defmodule Rinari.Model.Show do
-  use Ecto.Schema
+  use Rinari.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, except: [:__meta__, :episodes]}
   schema "shows" do
     field :air_day, :string
     field :air_time, :string
@@ -19,7 +20,7 @@ defmodule Rinari.Model.Show do
     field :title, :string
     field :original_title, :string
 
-    has_many :episodes, {"show_episodes", Rinari.Model.Episode}, foreign_key: :assoc_id
+    many_to_many :episodes, Rinari.Model.Episode, join_through: "shows_episodes"
 
     timestamps()
   end

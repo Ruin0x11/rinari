@@ -16,7 +16,8 @@ defmodule Rinari.Application do
       {Phoenix.PubSub, name: Rinari.PubSub},
       # Start the Endpoint (http/https)
       RinariWeb.Endpoint,
-      {Rinari.MessageQueue, []}
+      {Rinari.MessageQueue, []},
+      Rinari.Schemas
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

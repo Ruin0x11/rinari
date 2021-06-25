@@ -18,6 +18,8 @@ config :rinari, RinariWeb.Endpoint,
   pubsub_server: Rinari.PubSub,
   live_view: [signing_salt: "9PN2r/cc"]
 
+config :rinari, Rinari.Repo, migration_timestamps: [type: :utc_datetime]
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

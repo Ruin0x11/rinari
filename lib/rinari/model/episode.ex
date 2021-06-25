@@ -1,9 +1,9 @@
 defmodule Rinari.Model.Episode do
-  use Ecto.Schema
+  use Rinari.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, except: [:__meta__, :torrents]}
   schema "abstract table: episodes" do
-    field :assoc_id, :integer
     field :episode, :integer
     field :first_aired, :utc_datetime
     field :overview, :string
@@ -11,7 +11,7 @@ defmodule Rinari.Model.Episode do
     field :title, :string
     field :tmdb_id, :integer
 
-    has_many :torrents, {"episode_torrents", Rinari.Model.Torrent}, foreign_key: :assoc_id
+    many_to_many :torrents, Rinari.Model.Torrent, join_through: "episodes_torrents"
 
     timestamps()
   end
@@ -19,7 +19,7 @@ defmodule Rinari.Model.Episode do
   @doc false
   def changeset(episode, attrs) do
     episode
-    |> cast(attrs, [:assoc_id, :season, :episode, :first_aired, :title, :overview, :tmdb_id])
-    |> validate_required([:assoc_id, :season, :episode, :first_aired, :title, :overview, :tmdb_id])
+    |> cast(attrs, [:season, :episode, :first_aired, :title, :overview, :tmdb_id])
+    |> validate_required([:season, :episode, :first_aired, :title, :overview, :tmdb_id])
   end
 end

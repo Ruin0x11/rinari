@@ -1,7 +1,8 @@
 defmodule Rinari.Model.Anime do
-  use Ecto.Schema
+  use Rinari.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, except: [:__meta__, :torrents, :episodes]}
   schema "animes" do
     field :air_day, :string
     field :air_time, :string
@@ -21,8 +22,8 @@ defmodule Rinari.Model.Anime do
     field :original_title, :string
     field :type, Rinari.Model.Enum.AnimeType
 
-    has_many :torrents, {"anime_torrents", Rinari.Model.Torrent}, foreign_key: :assoc_id
-    has_many :episodes, {"anime_episodes", Rinari.Model.Episode}, foreign_key: :assoc_id
+    many_to_many :torrents, Rinari.Model.Torrent, join_through: "animes_torrents"
+    many_to_many :episodes, Rinari.Model.Episode, join_through: "animes_episodes"
 
     timestamps()
   end
