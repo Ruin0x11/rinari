@@ -1,6 +1,6 @@
 defmodule Rinari.Processor do
   @callback type :: String.t
-  @callback process :: Broadway.Message
+  @callback process(Broadway.Message.t) :: Broadway.Message.t
 
   def all do
     with {:ok, list} <- :application.get_key(:rinari, :modules) do

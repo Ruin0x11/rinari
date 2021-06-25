@@ -6,7 +6,6 @@ defmodule Rinari.MessageQueue do
   """
   use Broadway
   alias Broadway.{BatchInfo, Message}
-  alias Ecto.Changeset
 
   @queue_name "rinari"
 

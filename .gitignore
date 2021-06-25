@@ -34,3 +34,4 @@ npm-debug.log
 # this depending on your deployment strategy.
 /priv/static/
 log/
+/config/secret.exs

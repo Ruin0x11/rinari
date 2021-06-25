@@ -10,14 +10,14 @@ defmodule Rinari.Jackett.Client do
   """
   @spec new(binary, binary) :: t
   def new(base_url, api_key) do
-    headers = [
+    opts = [
       Tesla.Middleware.JSON,
       {TeslaXML.Tesla.Middleware.XML, decode_content_types: ["application/rss+xml"]},
       {Tesla.Middleware.BaseUrl, "#{base_url}/api/v2.0"}
     ]
     %__MODULE__{
       api_key: api_key,
-      client: Tesla.client(headers)
+      client: Tesla.client(opts)
     }
   end
 end

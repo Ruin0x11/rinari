@@ -13,15 +13,8 @@ defmodule Rinari.Jackett.Api.Results do
     body["rss"]["channel"]
   end
 
-  def search(%Client{api_key: api_key, client: client}, indexer, query) do
-    case client |> get!("/indexers/#{indexer}/results/torznab/", query: [{:apikey, api_key}, {:q, query}]) do
-      {:ok, resp} -> {:ok, parse_search(resp.body)}
-      {:error, err} -> {:error, err}
-    end
-  end
-
-  def search_by_imdb(%Client{api_key: api_key, client: client}, indexer, imdb_id) do
-    case client |> get!("/indexers/#{indexer}/results/torznab/", query: [{:apikey, api_key}, {:imdbid, imdb_id}]) do
+  def search(%Client{api_key: api_key, client: client}, indexer, opts \\ []) do
+    case client |> get!("/indexers/#{indexer}/results/torznab/", query: Enum.concat(opts, [{:apikey, api_key}])) do
       {:ok, resp} -> {:ok, parse_search(resp.body)}
       {:error, err} -> {:error, err}
     end
