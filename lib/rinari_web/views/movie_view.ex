@@ -6,10 +6,14 @@ defmodule RinariWeb.MovieView do
   end
 
   def render("show.json", %{movie: movie}) do
-    %{data: render_one(movie, MovieView, "movie.json")}
+    %{data: render_one(movie, __MODULE__, "movie.json")}
   end
 
-  def render("movie.json", %{movie: movie}) do
+  def render("page.json", %{movies: movies}) do
+    %{data: render_many(movies, __MODULE__, "movie.json", mode: :list)}
+  end
+
+  def render("movie.json", %{movie: movie, mode: mode}) do
     %{
       _id: movie.imdb_id,
       imdb_id: movie.imdb_id,
@@ -19,7 +23,7 @@ defmodule RinariWeb.MovieView do
       runtime: movie.runtime,
       released: movie.release_date,
       certification: movie.certification,
-      torrents: render_many(movie.torrents, RinariWeb.TorrentView, "torrent.json", media: movie, mode: "item"),
+      torrents: render_one(movie.torrents, RinariWeb.TorrentView, "media_torrents.json", media: movie, mode: mode, as: :torrents),
       trailer: movie.trailer,
       genres: [],
       images: [],

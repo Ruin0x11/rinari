@@ -54,6 +54,7 @@ defmodule Rinari.MixProject do
       {:torrentdissect, path: "apps/torrentdissect"},
       {:ecto_enum, "~> 1.4"},
       {:size, "~> 0.1.0"},
+      {:elasticsearch, "~> 1.0.0"},
       {:tmdb, github: "Ruin0x11/elixir-tmdb", branch: "develop"},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
     ]

@@ -9,4 +9,22 @@ defmodule RinariWeb.ControllerHelpers do
     page_count = ceil(count / @page_size)
     Enum.map(1..page_count, fn i -> "#{relation}/#{i}" end)
   end
+
+  def to_page_request(conn) do
+    conn = Plug.Conn.fetch_query_params(conn)
+    params = conn.query_params
+
+    %Rinari.Request.PageRequest{
+      genre: params["genre"],
+      keywords: params["keywords"],
+      sort: params["sort"],
+      order: params["order"]
+    }
+  end
+
+  def make_page_request(%Rinari.Request.PageRequest{} = page_request, schema, page) do
+    offset = (page - 1) * @page_size
+    limit = @page_size
+    Rinari.Elastic.Client.search(page_request, schema, offset, limit)
+  end
 end

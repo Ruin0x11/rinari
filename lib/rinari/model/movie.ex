@@ -27,3 +27,21 @@ defmodule Rinari.Model.Movie do
     |> unique_constraint(:imdb_id)
   end
 end
+
+defimpl Elasticsearch.Document, for: Rinari.Model.Movie do
+  def id(movie), do: movie.id
+  def routing(_), do: false
+  def encode(movie) do
+    %{
+      id: movie.id,
+      title: movie.title,
+      imdb_id: movie.imdb_id,
+      genres: [],
+      year: movie.release_date.year,
+      created: movie.inserted_at,
+      released: movie.release_date.year,
+      locales: [],
+      rating: []
+    }
+  end
+end

@@ -17,7 +17,8 @@ defmodule Rinari.Application do
       # Start the Endpoint (http/https)
       RinariWeb.Endpoint,
       {Rinari.MessageQueue, []},
-      Rinari.Schemas
+      Rinari.Schemas,
+      Rinari.Elastic.Cluster
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
