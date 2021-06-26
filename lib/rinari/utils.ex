@@ -50,4 +50,8 @@ defmodule Rinari.Utils do
   def index_torrents(media) do
     Rinari.Usagi.send_message(%{type: :torrent_index, media_type: entity_to_typed_id(media), id: media.id})
   end
+
+  def search_movies(query) do
+    Rinari.Usagi.send_message(%{type: :search, query: query})
+  end
 end
