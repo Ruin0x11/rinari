@@ -1,4 +1,6 @@
 defmodule Rinari.Utils do
+  alias Ecto.Changeset
+
   def typed_id_to_entity(type, id) when is_binary(type) do
     typed_id_to_entity(String.to_atom(type), id)
   end
@@ -13,6 +15,16 @@ defmodule Rinari.Utils do
     |> String.to_atom
   end
 
+  @image_base_url "http://image.tmdb.org/t/p/w500"
+
+  defp get_images(tmdb) do
+    [poster, backdrop] =
+    [tmdb["poster_path"], tmdb["backdrop_path"]]
+    |> Enum.map(fn url -> "#{@image_base_url}#{url}" end)
+
+    %Rinari.Model.Embedded.CoverImageSet{poster: poster, fanart: backdrop, banner: poster}
+  end
+
   def movie_title_to_entity(query) do
     client = Rinari.Tmdb.client
     with {:ok, %{"results" => results}} = client |> Tmdb.Search.movies(query),
@@ -24,9 +36,12 @@ defmodule Rinari.Utils do
       case movie do
         nil -> {:error, "No movie found. (query: #{query})"}
         x ->
-          with {:ok, details} <- client |> Tmdb.Movies.find(x["id"], append_to_response: "release_dates,videos"),
+          with {:ok, details} <- client |> Tmdb.Movies.find(x["id"], append_to_response: "images,release_dates,videos"),
                {:ok, movie} <- Rinari.Adapter.Movie.convert(details) do
-            Rinari.Repo.insert(movie)
+            images = get_images(details)
+            Changeset.change(movie)
+            |> Changeset.put_embed(:cover_image_set, images)
+            |> Rinari.Repo.insert()
           end
       end
     end

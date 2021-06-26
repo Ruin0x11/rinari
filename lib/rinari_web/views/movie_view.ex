@@ -6,11 +6,11 @@ defmodule RinariWeb.MovieView do
   end
 
   def render("show.json", %{movie: movie}) do
-    %{data: render_one(movie, __MODULE__, "movie.json")}
+    render_one(movie, __MODULE__, "movie.json")
   end
 
   def render("page.json", %{movies: movies}) do
-    %{data: render_many(movies, __MODULE__, "movie.json", mode: :list)}
+     render_many(movies, __MODULE__, "movie.json", mode: :list)
   end
 
   def render("movie.json", %{movie: movie, mode: mode}) do
@@ -18,16 +18,22 @@ defmodule RinariWeb.MovieView do
       _id: movie.imdb_id,
       imdb_id: movie.imdb_id,
       title: movie.title,
-      year: movie.release_date.year,
+      year: movie.release_date.year |> Integer.to_string,
       synopsis: movie.synopsis,
-      runtime: movie.runtime,
-      released: movie.release_date,
+      runtime: movie.runtime |> Integer.to_string,
+      released: movie.release_date |> DateTime.to_unix,
       certification: movie.certification,
       torrents: render_one(movie.torrents, RinariWeb.TorrentView, "media_torrents.json", media: movie, mode: mode, as: :torrents),
       trailer: movie.trailer,
-      genres: [],
-      images: [],
-      rating: []
+      genres: ["unknown"],
+      images: movie.cover_image_set,
+      rating: %{
+        percentage: 100,
+        watching: 0,
+        votes: 1000,
+        loved: 500,
+        hated: 500,
+      }
     }
   end
 end

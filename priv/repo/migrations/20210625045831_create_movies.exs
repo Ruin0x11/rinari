@@ -12,6 +12,7 @@ defmodule Rinari.Repo.Migrations.CreateMovies do
       add :release_date, :utc_datetime
       add :certification, :string
       add :trailer, :string
+      add :cover_image_set, :map
 
       timestamps()
     end

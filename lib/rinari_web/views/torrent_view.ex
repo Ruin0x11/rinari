@@ -28,7 +28,7 @@ defmodule RinariWeb.TorrentView do
       %Movie{} -> Map.merge(base, %{
                                     seed: torrent.seeders,
                                     peer: torrent.peers,
-                                    size: torrent.size,
+                                    size: torrent.size |> Integer.to_string,
                                     filesize: Size.humanize!(torrent.size)
                             })
       %Show{} ->

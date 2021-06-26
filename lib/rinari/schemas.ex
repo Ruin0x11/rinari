@@ -7,7 +7,12 @@ defmodule Rinari.Schemas do
 
   defp load_schemas do
     {:ok, modules} = :application.get_key(:rinari, :modules)
-    Enum.map(modules, fn mod -> function_exported?(mod, :__schema__, 1) && {mod.__schema__(:source) |> String.to_atom, mod} end) |> Enum.filter(& &1) |> Enum.into(%{})
+    modules
+    |> Enum.filter(fn mod -> function_exported?(mod, :__schema__, 1) end)
+    |> Enum.map(fn mod -> {mod.__schema__(:source), mod} end)
+    |> Enum.filter(fn {schema, _} -> schema end)
+    |> Enum.map(fn {schema, mod} -> {schema |> String.to_atom, mod} end)
+    |> Enum.into(%{})
   end
 
   def list do

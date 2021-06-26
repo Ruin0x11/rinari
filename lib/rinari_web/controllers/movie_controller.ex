@@ -31,6 +31,7 @@ defmodule RinariWeb.MovieController do
         torrents:
         ^from(
           t in Torrent,
+          where: t.seeders > 0,
           order_by: [asc: t.seeders]
         )
       ]

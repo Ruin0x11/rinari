@@ -14,8 +14,13 @@ defmodule RinariWeb.ControllerHelpers do
     conn = Plug.Conn.fetch_query_params(conn)
     params = conn.query_params
 
+    genre = case (params["genre"] || "all") |> String.downcase do
+              "all" -> nil
+              x -> x
+            end
+
     %Rinari.Request.PageRequest{
-      genre: params["genre"],
+      genre: genre,
       keywords: params["keywords"],
       sort: params["sort"],
       order: params["order"]

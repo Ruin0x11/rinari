@@ -28,7 +28,7 @@ defmodule Rinari.Elastic.Client do
     bool_query = if bool_query == %{} do
       %{"match_all" => %{}}
     else
-      bool_query
+      %{"bool" => bool_query}
     end
 
     query = %{

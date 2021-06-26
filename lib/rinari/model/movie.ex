@@ -16,6 +16,8 @@ defmodule Rinari.Model.Movie do
 
     many_to_many :torrents, Rinari.Model.Torrent, join_through: Rinari.Model.MovieTorrent
 
+    embeds_one :cover_image_set, Rinari.Model.Embedded.CoverImageSet
+
     timestamps()
   end
 
@@ -36,7 +38,7 @@ defimpl Elasticsearch.Document, for: Rinari.Model.Movie do
       id: movie.id,
       title: movie.title,
       imdb_id: movie.imdb_id,
-      genres: [],
+      genres: ["unknown"],
       year: movie.release_date.year,
       created: movie.inserted_at,
       released: movie.release_date.year,
