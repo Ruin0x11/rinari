@@ -61,7 +61,6 @@ defmodule Rinari.MessageQueue do
   def handle_batch(:default, messages, _, _), do: messages
 
   def handle_batch(type, messages, batch_info, _) do
-    IO.inspect(type)
     case Rinari.Batcher.for_type(type) do
       nil -> Enum.map(messages, &Message.failed(&1, "No batcher with type #{type} registered."))
       batcher -> batcher.batch(messages, batch_info)

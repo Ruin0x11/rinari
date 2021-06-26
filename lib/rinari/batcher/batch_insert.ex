@@ -14,26 +14,26 @@ defmodule Rinari.Batcher.BatchInsert do
     batch_insert_all(schema, messages, [])
   end
 
-  defp batch_insert_all(Torrent, messages, opts) do
+  defp batch_insert_all(Torrent, messages, _opts) do
     entries = convert_batch_to_entries(Torrent, messages)
 
     case Repo.insert_all(Torrent, entries, returning: true) do
       {n, results} when n == length(entries) ->
-        zip = Enum.zip([results, messages]|>IO.inspect)
+        zip = Enum.zip([results, messages])
         groups = Enum.group_by(zip, fn {_, %Message{data: %{assoc: assoc}}} -> assoc end)
 
-        entries = Enum.flat_map(groups, fn {%{type: type, id: id, relation: relation}, msgs} ->
+        entries = Enum.map(groups, fn {%{type: type, id: id, relation: relation}, msgs} ->
           relation = String.to_atom(relation)
           t = Enum.map(msgs, fn {result, _} -> result end)
-          media = Rinari.Utils.typed_id_to_entity(type, id)
+          media = Rinari.Utils.typed_id_to_entity(type, id) |> Repo.preload(relation)
           media
-          |> Repo.preload(relation)
-          |> Changeset.put_assoc(relation, [t | Map.get(media, String.to_existing_atom("relation"))])
+          |> Changeset.change
+          |> Changeset.put_assoc(relation, t ++ Map.get(media, String.to_existing_atom("#{relation}")))
           |> Repo.update()
-          |> Enum.map(fn {n, _} -> n == :ok end)
         end)
 
-        success = Enum.reduce(entries, true, fn b, a -> b && a end)
+        IO.inspect(entries)
+        success = true
 
         if success do
           messages

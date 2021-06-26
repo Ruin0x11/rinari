@@ -17,7 +17,6 @@ defmodule Rinari.TorrentFetcher do
     |> Enum.map(fn e -> {e["name"], e["value"]} end)
     |> Enum.into(%{})
     {:ok, publish_date} = result["pubDate"] |> Timex.parse("%a, %d %b %Y %H:%M:%S %z", :strftime)
-    IO.inspect(metadata)
 
     %Torrent{
       url: url,
@@ -36,19 +35,29 @@ defmodule Rinari.TorrentFetcher do
     resolution
   end
 
-  defp can_index(_raw, metadata, media) do
+  defp can_index(raw, metadata, media) do
+    IO.inspect({raw, metadata})
     title = metadata[:title] || ""
     (title =~ ~r/^#{media.title}$/i || title =~ ~r/^#{media.original_title}$/i)
     && metadata[:resolution] != nil
+    && String.starts_with?(raw["link"], "http")
   end
 
   defp to_torrents(results, media) do
     case results |> Enum.find(fn i -> elem(i, 0) == "item" end) do
       nil -> []
-      x -> elem(x, 1)
+      x ->
+        x = elem(x, 1)
+        x = cond do
+          x == nil -> []
+          x && !is_list(x) -> [x]
+          x -> x
+        end
+      x
       |> Enum.map(fn r -> {r, TorrentDissect.parse(r["title"])} end)
       |> Enum.filter(fn {r, metadata} -> can_index(r, metadata, media) end)
       |> Enum.map(fn {r, metadata} -> to_torrent(r, metadata, media) end)
+      |> Enum.filter(fn t -> t.url != nil end)
     end
   end
 

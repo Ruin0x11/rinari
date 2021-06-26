@@ -22,8 +22,8 @@ defmodule Rinari.Model.Anime do
     field :original_title, :string
     field :type, Rinari.Model.Enum.AnimeType
 
-    many_to_many :torrents, Rinari.Model.Torrent, join_through: "animes_torrents"
-    many_to_many :episodes, Rinari.Model.Episode, join_through: "animes_episodes"
+    many_to_many :torrents, Rinari.Model.Torrent, join_through: Rinari.Model.AnimeTorrent
+    many_to_many :episodes, Rinari.Model.Episode, join_through: Rinari.Model.AnimeEpisode
 
     timestamps()
   end

@@ -20,7 +20,7 @@ defmodule Rinari.Model.Show do
     field :title, :string
     field :original_title, :string
 
-    many_to_many :episodes, Rinari.Model.Episode, join_through: "shows_episodes"
+    many_to_many :episodes, Rinari.Model.Episode, join_through: Rinari.Model.ShowEpisode
 
     timestamps()
   end

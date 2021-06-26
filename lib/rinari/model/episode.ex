@@ -11,7 +11,7 @@ defmodule Rinari.Model.Episode do
     field :title, :string
     field :tmdb_id, :integer
 
-    many_to_many :torrents, Rinari.Model.Torrent, join_through: "episodes_torrents"
+    many_to_many :torrents, Rinari.Model.Torrent, join_through: Rinari.Model.EpisodeTorrent
 
     timestamps()
   end

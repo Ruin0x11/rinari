@@ -10,7 +10,7 @@ defmodule Rinari.Processor.TorrentIndex do
   def process(%Message{data: %{media_type: media_type, id: id}} = message) do
     case Rinari.ProviderStrategies.get_strategies(media_type, id) do
       {:ok, strategies} ->
-        Enum.each(strategies |> Enum.take(1), fn strategy -> Rinari.Usagi.send_message(%{type: :fetch_torrents, strategy: strategy}) end)
+        Enum.each(strategies, fn strategy -> Rinari.Usagi.send_message(%{type: :fetch_torrents, strategy: strategy}) end)
         message
 
       {:error, _} ->

@@ -18,7 +18,7 @@ defmodule Rinari.Utils do
     with {:ok, %{"results" => results}} = client |> Tmdb.Search.movies(query),
          results <- results |> Enum.sort_by(fn m -> -m["popularity"] end) do
       movie = case Enum.find(results, fn m -> (m["title"] =~ ~r/^#{query}$/i) || (m["original_title"] =~ ~r/^#{query}$/i) end) do
-                nil -> Enum.get(results, 0)
+                nil -> Enum.at(results, 0)
                 m -> m |> IO.inspect
               end
       case movie do

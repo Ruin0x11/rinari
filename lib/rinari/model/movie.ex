@@ -14,7 +14,7 @@ defmodule Rinari.Model.Movie do
     field :original_title, :string
     field :trailer, :string
 
-    many_to_many :torrents, Rinari.Model.Torrent, join_through: "movies_torrents"
+    many_to_many :torrents, Rinari.Model.Torrent, join_through: Rinari.Model.MovieTorrent
 
     timestamps()
   end
